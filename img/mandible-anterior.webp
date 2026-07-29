@@ -1,1 +1,87 @@
 
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" width="900" height="760" role="img" aria-label="아래턱뼈 앞면 도식">
+  <defs>
+    <linearGradient id="bone" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#F3EBDA"/>
+      <stop offset="0.55" stop-color="#E4D8BE"/>
+      <stop offset="1" stop-color="#CEBE9E"/>
+    </linearGradient>
+    <linearGradient id="boneHi" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FBF5E8"/>
+      <stop offset="1" stop-color="#E7DBC0"/>
+    </linearGradient>
+    <path id="mHalf" d="M450 432
+      C380 430 312 414 274 391
+      C253 378 248 340 250 300
+      L259 96
+      L205 188
+      C200 155 178 128 158 130
+      C141 132 133 153 141 174
+      C132 210 129 255 127 305
+      C124 380 132 452 152 508
+      C179 579 261 646 361 668
+      C390 675 420 679 450 681 Z"/>
+    <path id="mEdge" d="M450 432
+      C380 430 312 414 274 391
+      C253 378 248 340 250 300
+      L259 96
+      L205 188
+      C200 155 178 128 158 130
+      C141 132 133 153 141 174
+      C132 210 129 255 127 305
+      C124 380 132 452 152 508
+      C179 579 261 646 361 668
+      C390 675 420 679 450 681"/>
+  </defs>
+
+  <!-- bone body -->
+  <g>
+    <use href="#mHalf" fill="url(#bone)"/>
+    <use href="#mHalf" fill="url(#bone)" transform="translate(900,0) scale(-1,1)"/>
+  </g>
+
+  <!-- alveolar part -->
+  <path d="M274 391 C340 418 400 430 450 432 C500 430 560 418 626 391
+           L626 428 C560 455 500 467 450 469 C400 467 340 455 274 428 Z"
+        fill="#D6C5A4" opacity="0.85"/>
+  <g stroke="#A8977A" stroke-width="2.4" stroke-linecap="round" opacity="0.75">
+    <line x1="288" y1="397" x2="288" y2="429"/>
+    <line x1="315" y1="408" x2="315" y2="440"/>
+    <line x1="342" y1="417" x2="342" y2="449"/>
+    <line x1="369" y1="423" x2="369" y2="455"/>
+    <line x1="396" y1="428" x2="396" y2="460"/>
+    <line x1="423" y1="431" x2="423" y2="463"/>
+    <line x1="450" y1="432" x2="450" y2="464"/>
+    <line x1="477" y1="431" x2="477" y2="463"/>
+    <line x1="504" y1="428" x2="504" y2="460"/>
+    <line x1="531" y1="423" x2="531" y2="455"/>
+    <line x1="558" y1="417" x2="558" y2="449"/>
+    <line x1="585" y1="408" x2="585" y2="440"/>
+    <line x1="612" y1="397" x2="612" y2="429"/>
+  </g>
+
+  <!-- mental protuberance -->
+  <path d="M450 588 C503 599 528 638 516 662 C492 673 408 673 384 662
+           C372 638 397 599 450 588 Z"
+        fill="url(#boneHi)" opacity="0.7"/>
+  <!-- mental tubercles -->
+  <circle cx="392" cy="653" r="12" fill="#F0E7D3" opacity="0.75"/>
+  <circle cx="508" cy="653" r="12" fill="#F0E7D3" opacity="0.75"/>
+
+  <!-- oblique line -->
+  <path d="M243 415 C258 480 292 550 332 606" fill="none" stroke="#B09C77" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M657 415 C642 480 608 550 568 606" fill="none" stroke="#B09C77" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- mandibular symphysis -->
+  <path d="M450 470 L450 600" fill="none" stroke="#A8977A" stroke-width="3.4" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- mental foramina -->
+  <ellipse cx="335" cy="585" rx="14" ry="9.5" transform="rotate(-14 335 585)" fill="#8E7F63"/>
+  <ellipse cx="565" cy="585" rx="14" ry="9.5" transform="rotate(14 565 585)" fill="#8E7F63"/>
+
+  <!-- outline -->
+  <g fill="none" stroke="#9C8A6B" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <use href="#mEdge"/>
+    <use href="#mEdge" transform="translate(900,0) scale(-1,1)"/>
+  </g>
+</svg>
