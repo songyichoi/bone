@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문항 에디터 · 표본실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+<style>
+:root{
+  --ink:#0D1417;--ink2:#141E22;--ink3:#1D2A30;--ink4:#26363D;
+  --bone:#EDE3D0;--bone-dim:#A9A08D;--slate:#728891;
+  --nerve:#E3C24C;--artery:#C0483E;--vein:#4E86B0;
+  --line:rgba(237,227,208,.12);--line2:rgba(237,227,208,.22);
+  --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
+  --serif:"Spectral",Georgia,serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--bone);font-family:var(--sans);font-size:14px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
+
+header{
+  display:flex;align-items:center;gap:16px;padding:14px 20px;
+  border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--ink);z-index:10;
+}
+header h1{font-family:var(--serif);font-size:19px;font-weight:600;margin:0;letter-spacing:-.01em}
+header .sp{flex:1}
+.btn{padding:8px 14px;border:1px solid var(--line2);border-radius:6px;font-size:13px;color:var(--bone-dim)}
+.btn:hover{border-color:var(--nerve);color:var(--nerve)}
+.btn.solid{background:var(--nerve);color:#15100A;border-color:var(--nerve);font-weight:700}
+.btn.solid:hover{opacity:.9;color:#15100A}
+
+main{display:grid;grid-template-columns:1fr 380px;gap:0;align-items:start}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+
+/* 왼쪽: 판 */
+.left{padding:20px;min-width:0}
+.drop{
+  border:1px dashed var(--line2);border-radius:10px;min-height:340px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:var(--slate);font-size:13px;text-align:center;padding:30px;
+}
+.drop.hot{border-color:var(--nerve);background:rgba(227,194,76,.05)}
+.plateWrap{position:relative;display:inline-block;max-width:100%;line-height:0;cursor:crosshair}
+.plateWrap img{max-width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none}
+.p{position:absolute;width:0;height:0}
+.p i{
+  position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--nerve);background:rgba(13,20,23,.6);cursor:grab;
+}
+.p b{
+  position:absolute;left:12px;top:-9px;font-family:var(--mono);font-size:10px;
+  background:var(--ink);padding:2px 5px;border-radius:3px;white-space:nowrap;
+  color:var(--bone-dim);border:1px solid var(--line);
+}
+.p.sel i{background:var(--nerve);box-shadow:0 0 0 4px rgba(227,194,76,.25)}
+.p.sel b{color:var(--nerve);border-color:var(--nerve)}
+.tipbar{margin-top:12px;font-size:12px;color:var(--slate);display:flex;gap:16px;flex-wrap:wrap}
+.tipbar kbd{font-family:var(--mono);font-size:11px;background:var(--ink3);padding:2px 6px;border-radius:3px}
+
+/* 오른쪽: 폼 */
+.right{border-left:1px solid var(--line);padding:20px;min-height:100vh}
+@media(max-width:900px){.right{border-left:0;border-top:1px solid var(--line);min-height:auto}}
+.sec{margin-bottom:24px}
+.sec > .eyebrow{display:block;margin-bottom:10px}
+label{display:block;margin-bottom:10px}
+label span{display:block;font-size:11.5px;color:var(--slate);margin-bottom:4px}
+input[type=text],textarea,select{
+  width:100%;background:var(--ink2);border:1px solid var(--line);border-radius:6px;
+  padding:9px 10px;font-size:13.5px;outline:none;
+}
+input[type=text]:focus,textarea:focus{border-color:var(--nerve)}
+textarea{resize:vertical;min-height:62px;font-family:var(--mono);font-size:12px;line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.list{border-top:1px solid var(--line)}
+.row{
+  display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.row:hover{background:rgba(237,227,208,.03)}
+.row.sel{background:rgba(227,194,76,.07)}
+.row .n{font-family:var(--mono);font-size:11px;color:var(--slate);width:20px;flex:none}
+.row .t{flex:1;min-width:0;font-family:var(--serif);font-style:italic;font-size:13.5px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .k{font-size:11.5px;color:var(--slate);flex:none}
+.row .x{color:var(--slate);font-size:15px;padding:0 4px;flex:none}
+.row .x:hover{color:var(--artery)}
+.empty{color:var(--slate);font-size:12.5px;padding:14px 0}
+
+dialog{
+  background:var(--ink2);color:var(--bone);border:1px solid var(--line2);border-radius:10px;
+  max-width:640px;width:92vw;padding:20px;
+}
+dialog::backdrop{background:rgba(0,0,0,.65)}
+dialog textarea{min-height:300px}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink4);
+  padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:99;
+}
+.toast.on{opacity:1}
+:focus-visible{outline:2px solid var(--nerve);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <h1>문항 에디터</h1>
+  <span class="eyebrow" id="stat">핀 0개</span>
+  <div class="sp"></div>
+  <button class="btn" onclick="location.href='index.html'">← 앱으로</button>
+  <button class="btn" id="importBtn">불러오기</button>
+  <button class="btn solid" id="exportBtn">JSON 내보내기</button>
+</header>
+
+<main>
+  <div class="left">
+    <div id="drop" class="drop">
+      <b style="color:var(--bone-dim);font-size:14px">이미지를 여기에 끌어다 놓으세요</b>
+      <span>또는 클릭해서 선택 · png / jpg / webp / svg</span>
+      <input type="file" id="file" accept="image/*" hidden>
+    </div>
+    <div id="stageBox" hidden>
+      <div class="plateWrap" id="plateWrap">
+        <img id="plate" alt="">
+        <div id="pins"></div>
+      </div>
+      <div class="tipbar">
+        <span>이미지를 <kbd>클릭</kbd>해 핀 추가</span>
+        <span>핀을 <kbd>드래그</kbd>해 이동</span>
+        <span><kbd>Enter</kbd> 저장 후 다음 핀</span>
+        <span><kbd>Delete</kbd> 선택 핀 삭제</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="sec">
+      <span class="eyebrow">챕터</span>
+      <div class="two">
+        <label><span>id (파일·저장 키)</span><input type="text" id="chId" placeholder="mandible-anterior"></label>
+        <label><span>이미지 경로</span><input type="text" id="chImg" placeholder="img/mandible-anterior.svg"></label>
+      </div>
+      <label><span>제목</span><input type="text" id="chTitle" placeholder="아래턱뼈 · 앞면"></label>
+      <label><span>부제 (라틴어)</span><input type="text" id="chSub" placeholder="Mandible, anterior view"></label>
+    </div>
+
+    <div class="sec">
+      <span class="eyebrow">선택한 핀</span>
+      <div id="formBox">
+        <p class="empty" id="noSel">이미지를 클릭해 첫 핀을 찍으세요.</p>
+        <div id="form" hidden>
+          <label><span>이름 · 쉼표로 별칭 추가</span>
+            <input type="text" id="fAns" placeholder="foramen ovale, ovale"></label>
+          <div class="two">
+            <label><span>한글</span><input type="text" id="fKo" placeholder="타원구멍"></label>
+            <label><span>종류</span>
+              <select id="fType">
+                <option value="">—</option>
+                <option>foramen</option><option>canal</option><option>fissure</option>
+                <option>process</option><option>fossa</option><option>groove</option>
+                <option>line</option><option>suture</option><option>part</option>
+                <option>meatus</option><option>hiatus</option><option>point</option>
+              </select></label>
+          </div>
+          <label><span>통과물 · 한 줄에 하나</span>
+            <textarea id="fCon" placeholder="mandibular nerve (CN V3)&#10;accessory meningeal artery"></textarea></label>
+          <label><span>힌트 (선택)</span><input type="text" id="fHint" placeholder="spinosum보다 앞안쪽"></label>
+          <div class="two">
+            <button class="btn" id="reposBtn">위치 다시 찍기</button>
+            <button class="btn" id="delBtn" style="color:#E38078">이 핀 삭제</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="eyebrow">핀 목록</span>
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+</main>
+
+<dialog id="dlg">
+  <p class="eyebrow" id="dlgLabel">chapters.js 에 붙여넣을 조각</p>
+  <textarea id="dlgText" spellcheck="false"></textarea>
+  <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+    <button class="btn" id="dlgClose">닫기</button>
+    <button class="btn" id="dlgLoad" hidden>이 내용으로 불러오기</button>
+    <button class="btn solid" id="dlgCopy">복사</button>
+  </div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+let items = [], sel = -1, reposing = false;
+
+/* ── 이미지 로드 ────────────────────── */
+const drop = $("#drop"), file = $("#file"), plate = $("#plate");
+drop.onclick = () => file.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("hot"); };
+drop.ondragleave = () => drop.classList.remove("hot");
+drop.ondrop = e => {
+  e.preventDefault(); drop.classList.remove("hot");
+  if(e.dataTransfer.files[0]) useFile(e.dataTransfer.files[0]);
+};
+file.onchange = e => { if(e.target.files[0]) useFile(e.target.files[0]); };
+function useFile(f){
+  const r = new FileReader();
+  r.onload = () => {
+    plate.src = r.result;
+    drop.hidden = true; $("#stageBox").hidden = false;
+    if(!$("#chImg").value) $("#chImg").value = "img/" + f.name;
+    if(!$("#chId").value)  $("#chId").value  = f.name.replace(/\.[^.]+$/, "");
+  };
+  r.readAsDataURL(f);
+}
+function loadByPath(p){
+  if(!p) return;
+  plate.src = p;
+  plate.onload = () => { drop.hidden = true; $("#stageBox").hidden = false; render(); };
+  plate.onerror = () => toast("이미지 경로를 찾지 못했습니다 — 직접 올려주세요");
+}
+
+/* ── 핀 배치 ────────────────────────── */
+const wrap = $("#plateWrap");
+let dragIdx = -1;
+wrap.addEventListener("pointerdown", e => {
+  const pin = e.target.closest(".p");
+  if(pin){ dragIdx = +pin.dataset.i; select(dragIdx); wrap.setPointerCapture(e.pointerId); e.preventDefault(); }
+});
+wrap.addEventListener("pointermove", e => {
+  if(dragIdx < 0) return;
+  const c = coords(e); items[dragIdx].x = c.x; items[dragIdx].y = c.y; render();
+});
+wrap.addEventListener("pointerup", e => {
+  if(dragIdx >= 0){ dragIdx = -1; return; }
+});
+wrap.addEventListener("click", e => {
+  if(e.target.closest(".p")) return;
+  const c = coords(e);
+  if(reposing && sel >= 0){
+    items[sel].x = c.x; items[sel].y = c.y; reposing = false;
+    $("#reposBtn").textContent = "위치 다시 찍기"; render(); return;
+  }
+  items.push({ x:c.x, y:c.y, answer:"", ko:"", type:"", contents:"", hint:"" });
+  select(items.length - 1); render();
+  $("#fAns").focus();
+});
+function coords(e){
+  const r = plate.getBoundingClientRect();
+  return {
+    x: +Math.min(1, Math.max(0, (e.clientX - r.left)/r.width)).toFixed(4),
+    y: +Math.min(1, Math.max(0, (e.clientY - r.top)/r.height)).toFixed(4)
+  };
+}
+
+/* ── 폼 ─────────────────────────────── */
+const F = { fAns:"answer", fKo:"ko", fType:"type", fCon:"contents", fHint:"hint" };
+Object.keys(F).forEach(id => {
+  $("#"+id).addEventListener("input", () => {
+    if(sel < 0) return;
+    items[sel][F[id]] = $("#"+id).value;
+    renderList(); renderPins(); status();
+  });
+});
+$("#fAns").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); toast("이제 이미지를 클릭해 다음 핀을 찍으세요"); plate.scrollIntoView({block:"nearest"}); }
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Delete" && sel >= 0 && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) delSel();
+});
+$("#delBtn").onclick = delSel;
+function delSel(){ if(sel < 0) return; items.splice(sel,1); select(-1); render(); }
+$("#reposBtn").onclick = () => {
+  reposing = !reposing;
+  $("#reposBtn").textContent = reposing ? "이미지에서 위치를 클릭…" : "위치 다시 찍기";
+};
+function select(i){
+  sel = i;
+  const has = i >= 0;
+  $("#form").hidden = !has; $("#noSel").hidden = has;
+  if(!has) return;
+  const it = items[i];
+  $("#fAns").value = it.answer; $("#fKo").value = it.ko;
+  $("#fType").value = it.type;  $("#fCon").value = it.contents; $("#fHint").value = it.hint;
+  render();
+}
+
+/* ── 렌더 ───────────────────────────── */
+function render(){ renderPins(); renderList(); status(); }
+function renderPins(){
+  $("#pins").innerHTML = items.map((it,i) => `
+    <div class="p ${i===sel?"sel":""}" data-i="${i}" style="left:${it.x*100}%;top:${it.y*100}%">
+      <i></i><b>${esc(firstName(it) || (i+1))}</b>
+    </div>`).join("");
+}
+function renderList(){
+  const l = $("#list");
+  if(!items.length){ l.innerHTML = `<p class="empty">아직 핀이 없습니다.</p>`; return; }
+  l.innerHTML = items.map((it,i) => `
+    <div class="row ${i===sel?"sel":""}" data-i="${i}">
+      <span class="n">${i+1}</span>
+      <span class="t">${esc(firstName(it) || "이름 없음")}</span>
+      <span class="k">${esc(it.ko)}</span>
+      <button class="x" data-del="${i}" title="삭제">×</button>
+    </div>`).join("");
+  l.onclick = e => {
+    const d = e.target.closest("[data-del]");
+    if(d){ items.splice(+d.dataset.del,1); select(-1); render(); return; }
+    const r = e.target.closest(".row");
+    if(r) select(+r.dataset.i);
+  };
+}
+function status(){
+  const named = items.filter(it => firstName(it)).length;
+  $("#stat").textContent = `핀 ${items.length}개 · 이름 ${named}개`;
+}
+function firstName(it){ return (it.answer||"").split(",")[0].trim(); }
+function esc(s){ return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+let tT; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove("on"),2000); }
+
+/* ── 내보내기 · 불러오기 ────────────── */
+function slug(s){
+  return (s||"").toLowerCase().trim().replace(/\(.*?\)/g,"")
+    .replace(/[^a-z0-9가-힣]+/g,"-").replace(/^-|-$/g,"") || "item";
+}
+function build(){
+  const used = new Set();
+  return {
+    id: $("#chId").value.trim() || "chapter",
+    title: $("#chTitle").value.trim() || "이름 없는 챕터",
+    subtitle: $("#chSub").value.trim() || undefined,
+    image: $("#chImg").value.trim() || null,
+    items: items.map(it => {
+      const ans = (it.answer||"").split(",").map(s=>s.trim()).filter(Boolean);
+      let id = slug(ans[0]); let n = 2;
+      while(used.has(id)) id = slug(ans[0]) + "-" + n++;
+      used.add(id);
+      const con = (it.contents||"").split("\n").map(s=>s.trim()).filter(Boolean);
+      const o = { id, x:it.x, y:it.y, answer: ans.length?ans:["(미입력)"] };
+      if(it.ko) o.ko = it.ko;
+      if(it.type) o.type = it.type;
+      if(con.length) o.contents = con;
+      if(it.hint) o.hint = it.hint;
+      return o;
+    })
+  };
+}
+$("#exportBtn").onclick = () => {
+  const txt = JSON.stringify(build(), null, 2);
+  $("#dlgLabel").textContent = "data/chapters.js 의 CHAPTERS 배열에 붙여넣으세요";
+  $("#dlgText").value = txt;
+  $("#dlgLoad").hidden = true;
+  $("#dlg").showModal();
+};
+$("#importBtn").onclick = () => {
+  $("#dlgLabel").textContent = "챕터 JSON 을 붙여넣고 불러오기를 누르세요";
+  $("#dlgText").value = "";
+  $("#dlgLoad").hidden = false;
+  $("#dlg").showModal();
+};
+$("#dlgClose").onclick = () => $("#dlg").close();
+$("#dlgCopy").onclick = async () => {
+  try{ await navigator.clipboard.writeText($("#dlgText").value); toast("복사했습니다"); }
+  catch(e){ $("#dlgText").select(); document.execCommand("copy"); toast("복사했습니다"); }
+};
+$("#dlgLoad").onclick = () => {
+  try{
+    const c = JSON.parse($("#dlgText").value);
+    $("#chId").value = c.id||""; $("#chTitle").value = c.title||"";
+    $("#chSub").value = c.subtitle||""; $("#chImg").value = c.image||"";
+    items = (c.items||[]).map(it => ({
+      x: it.x ?? .5, y: it.y ?? .5,
+      answer: (it.answer||[]).join(", "), ko: it.ko||"", type: it.type||"",
+      contents: (it.contents||[]).join("\n"), hint: it.hint||""
+    }));
+    select(-1); render(); $("#dlg").close();
+    loadByPath(c.image);
+    toast(`${items.length}개 핀을 불러왔습니다`);
+  }catch(e){ toast("JSON 형식이 아닙니다"); }
+};
+
+render();
+</script>
+</body>
+</html>
